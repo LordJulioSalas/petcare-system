@@ -38,18 +38,19 @@ async function loadAppointments() {
         
         const tbody = document.getElementById('appointmentsTable');
         tbody.innerHTML = appointments.map(apt => {
-            const pet = pets.find(p => p.id === apt.petId);
+            const pet = pets.find(p => p._id === apt.petId || p._id === apt.petId?._id);
+            const petName = apt.petId?.name || pet?.name || 'N/A';
             return `
                 <tr>
-                    <td>${apt.id}</td>
-                    <td>${pet ? pet.name : 'N/A'}</td>
+                    <td>${apt._id}</td>
+                    <td>${petName}</td>
                     <td>${apt.date}</td>
                     <td>${apt.time}</td>
                     <td>${apt.reason}</td>
                     <td><span class="status status-${apt.status}">${apt.status}</span></td>
                     <td>
-                        <button class="btn btn-success" onclick="updateStatus(${apt.id}, 'confirmed')">Confirmar</button>
-                        <button class="btn btn-primary" onclick="viewDetails(${apt.id})">Ver</button>
+                        <button class="btn btn-success" onclick="updateStatus('${apt._id}', 'confirmed')">Confirmar</button>
+                        <button class="btn btn-primary" onclick="viewDetails('${apt._id}')">Ver</button>
                     </td>
                 </tr>
             `;
@@ -68,20 +69,20 @@ async function loadPets() {
         const tbody = document.getElementById('petsTable');
         tbody.innerHTML = pets.map(pet => `
             <tr>
-                <td>${pet.id}</td>
+                <td>${pet._id}</td>
                 <td>${pet.name}</td>
                 <td>${pet.species}</td>
                 <td>${pet.breed || 'N/A'}</td>
                 <td>${pet.owner}</td>
                 <td>
-                    <button class="btn btn-primary" onclick="viewPetHistory(${pet.id})">Historial</button>
+                    <button class="btn btn-primary" onclick="viewPetHistory('${pet._id}')">Historial</button>
                 </td>
             </tr>
         `).join('');
         
         const select = document.getElementById('recordPetId');
         select.innerHTML = '<option value="">Selecciona una mascota</option>' + 
-            pets.map(pet => `<option value="${pet.id}">${pet.name} - ${pet.owner}</option>`).join('');
+            pets.map(pet => `<option value="${pet._id}">${pet.name} - ${pet.owner}</option>`).join('');
     } catch (error) {
         console.error('Error:', error);
     }
@@ -209,42 +210,37 @@ function viewDetails(id) {
         .then(result => {
             if (result.success) {
                 const apt = result.data;
+                const pet = apt.petId;
                 
-                fetch(`${API_URL}/pets/${apt.petId}`)
-                    .then(r => r.json())
-                    .then(petResult => {
-                        const pet = petResult.data;
+                const content = `
+                    <div style="display: grid; gap: 20px;">
+                        <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
+                            <h3 style="color: #667eea; margin-bottom: 15px;">🐾 Información del Paciente</h3>
+                            <p><strong>Nombre:</strong> ${pet?.name || 'N/A'}</p>
+                            <p><strong>Especie:</strong> ${pet?.species || 'N/A'}</p>
+                            <p><strong>Raza:</strong> ${pet?.breed || 'No especificada'}</p>
+                            <p><strong>Dueño:</strong> ${pet?.owner || 'N/A'}</p>
+                        </div>
                         
-                        const content = `
-                            <div style="display: grid; gap: 20px;">
-                                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
-                                    <h3 style="color: #667eea; margin-bottom: 15px;">🐾 Información del Paciente</h3>
-                                    <p><strong>Nombre:</strong> ${pet.name}</p>
-                                    <p><strong>Especie:</strong> ${pet.species}</p>
-                                    <p><strong>Raza:</strong> ${pet.breed || 'No especificada'}</p>
-                                    <p><strong>Dueño:</strong> ${pet.owner}</p>
-                                </div>
-                                
-                                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
-                                    <h3 style="color: #667eea; margin-bottom: 15px;">📅 Detalles de la Cita</h3>
-                                    <p><strong>ID Cita:</strong> #${apt.id}</p>
-                                    <p><strong>Fecha:</strong> ${apt.date}</p>
-                                    <p><strong>Hora:</strong> ${apt.time}</p>
-                                    <p><strong>Motivo:</strong> ${apt.reason}</p>
-                                    <p><strong>Estado:</strong> <span class="status status-${apt.status}">${apt.status}</span></p>
-                                </div>
-                                
-                                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                                    <button class="btn btn-success" onclick="updateStatus(${apt.id}, 'confirmed'); closeDetailsModal();">Confirmar</button>
-                                    <button class="btn btn-primary" onclick="updateStatus(${apt.id}, 'completed'); closeDetailsModal();">Completar</button>
-                                    <button class="btn btn-danger" onclick="updateStatus(${apt.id}, 'cancelled'); closeDetailsModal();">Cancelar</button>
-                                </div>
-                            </div>
-                        `;
+                        <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
+                            <h3 style="color: #667eea; margin-bottom: 15px;">📅 Detalles de la Cita</h3>
+                            <p><strong>ID Cita:</strong> #${apt._id}</p>
+                            <p><strong>Fecha:</strong> ${apt.date}</p>
+                            <p><strong>Hora:</strong> ${apt.time}</p>
+                            <p><strong>Motivo:</strong> ${apt.reason}</p>
+                            <p><strong>Estado:</strong> <span class="status status-${apt.status}">${apt.status}</span></p>
+                        </div>
                         
-                        document.getElementById('appointmentDetailsContent').innerHTML = content;
-                        document.getElementById('appointmentDetailsModal').classList.add('active');
-                    });
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button class="btn btn-success" onclick="updateStatus('${apt._id}', 'confirmed'); closeDetailsModal();">Confirmar</button>
+                            <button class="btn btn-primary" onclick="updateStatus('${apt._id}', 'completed'); closeDetailsModal();">Completar</button>
+                            <button class="btn btn-danger" onclick="updateStatus('${apt._id}', 'cancelled'); closeDetailsModal();">Cancelar</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('appointmentDetailsContent').innerHTML = content;
+                document.getElementById('appointmentDetailsModal').classList.add('active');
             }
         });
 }
