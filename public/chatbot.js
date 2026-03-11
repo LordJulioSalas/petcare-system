@@ -149,7 +149,7 @@ class PetCareChatbot {
 
     async sendToAI(message) {
         try {
-            const response = await fetch('http://localhost:3000/api/chatbot/chat', {
+            const response = await fetch('/api/chatbot/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
