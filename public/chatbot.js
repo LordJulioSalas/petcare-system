@@ -217,7 +217,15 @@ class PetCareChatbot {
         switch(action) {
             case 'agendar':
                 this.addUserMessage('Quiero agendar una cita');
-                this.sendToAI('Quiero agendar una cita para mi mascota');
+                this.addBotMessage('¡Perfecto! Abriendo el formulario de citas... 📋');
+                setTimeout(() => {
+                    if (typeof openAppointmentModal === 'function') {
+                        openAppointmentModal();
+                        this.toggleChat(); // Cerrar el chatbot
+                    } else {
+                        this.addBotMessage('Por favor, haz clic en el botón "Agendar Cita" en la parte superior de la página.');
+                    }
+                }, 500);
                 break;
             case 'servicios':
                 this.addUserMessage('¿Qué servicios ofrecen?');
