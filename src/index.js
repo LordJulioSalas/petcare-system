@@ -18,7 +18,7 @@ app.use(express.static('public'));
 
 // Rutas
 app.get('/', (req, res) => {
-  res.json({ message: 'Sistema de Citas para Mascotas' });
+  res.sendFile(__dirname + '/../public/index.html');
 });
 
 app.use('/api/auth', authRoutes);
