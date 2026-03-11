@@ -80,7 +80,13 @@ document.getElementById('appointmentForm').addEventListener('submit', async (e) 
         });
         
         const petResult = await petResponse.json();
-        const petId = petResult.data.id;
+        
+        if (!petResult.success) {
+            alert('Error al registrar la mascota. Por favor intenta nuevamente.');
+            return;
+        }
+        
+        const petId = petResult.data._id || petResult.data.id;
         
         // Crear cita
         const appointmentResponse = await fetch(`${API_URL}/appointments`, {
@@ -94,9 +100,13 @@ document.getElementById('appointmentForm').addEventListener('submit', async (e) 
             })
         });
         
-        if (appointmentResponse.ok) {
+        const appointmentResult = await appointmentResponse.json();
+        
+        if (appointmentResult.success) {
             document.getElementById('step3').classList.remove('active');
             document.getElementById('successStep').classList.add('active');
+        } else {
+            alert('Error al agendar la cita: ' + (appointmentResult.message || 'Por favor intenta nuevamente.'));
         }
     } catch (error) {
         alert('Error al agendar la cita. Por favor intenta nuevamente.');
