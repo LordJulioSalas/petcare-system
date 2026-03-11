@@ -1,9 +1,11 @@
 const User = require('../models/User');
 
 let users = [
-  new User(1, 'admin', 'admin123', 'admin', 'Administrador', 'admin@petcare.com'),
-  new User(2, 'vet1', 'vet123', 'veterinarian', 'Dr. Carlos Pérez', 'carlos@petcare.com'),
-  new User(3, 'recep1', 'recep123', 'receptionist', 'María González', 'maria@petcare.com')
+  new User(1, 'admin', 'admin123', 'admin', 'Dr. Carlos Administrador', 'admin@petcare.com'),
+  new User(2, 'recepcion1', 'recep123', 'receptionist', 'María Recepcionista', 'recepcion@petcare.com'),
+  new User(3, 'asistente1', 'asist123', 'assistant', 'Ana Asistente Veterinaria', 'asistente@petcare.com'),
+  new User(4, 'vet1', 'vet123', 'veterinarian', 'Dr. Carlos Pérez', 'carlos@petcare.com'),
+  new User(5, 'vet2', 'vet123', 'veterinarian', 'Dra. Laura Martínez', 'laura@petcare.com')
 ];
 
 let sessions = {};

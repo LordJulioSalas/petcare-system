@@ -12,6 +12,7 @@ const petsRoutes = require('./routes/pets');
 const appointmentsRoutes = require('./routes/appointments');
 const medicalRecordsRoutes = require('./routes/medicalRecords');
 const chatbotRoutes = require('./routes/chatbot');
+const vitalSignsRoutes = require('./routes/vitalSigns');
 
 // CORS middleware
 app.use((req, res, next) => {
@@ -37,6 +38,7 @@ app.use('/api/pets', petsRoutes);
 app.use('/api/appointments', appointmentsRoutes);
 app.use('/api/medical-records', medicalRecordsRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/vital-signs', vitalSignsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);

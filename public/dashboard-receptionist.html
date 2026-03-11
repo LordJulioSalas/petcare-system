@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepción - PetCare</title>
+    <link rel="stylesheet" href="dashboard-styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <h1>🐾 PetCare - Recepción</h1>
+        <div class="user-info">
+            <span id="userName"></span>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Citas Hoy</h3>
+                <div class="number" id="todayAppointments">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>En Sala de Espera</h3>
+                <div class="number" id="waitingRoom">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Próxima Cita</h3>
+                <div class="number" id="nextAppointment">--:--</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('appointments')">Citas del Día</button>
+            <button class="tab" onclick="showTab('checkin')">Check-in</button>
+            <button class="tab" onclick="showTab('register')">Registrar Paciente</button>
+        </div>
+
+        <div id="appointmentsTab" class="tab-content active">
+            <div class="card">
+                <h2>Citas Programadas</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Mascota</th>
+                            <th>Dueño</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="checkinTab" class="tab-content">
+            <div class="card">
+                <h2>Check-in de Pacientes</h2>
+                <p>Selecciona la cita para hacer check-in</p>
+                <div id="checkinList"></div>
+            </div>
+        </div>
+
+        <div id="registerTab" class="tab-content">
+            <div class="card">
+                <h2>Registrar Nueva Mascota</h2>
+                <form id="registerPetForm">
+                    <div class="form-group">
+                        <label>Nombre de la Mascota</label>
+                        <input type="text" id="petName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Especie</label>
+                        <select id="petSpecies" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Perro">Perro</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Ave">Ave</option>
+                            <option value="Conejo">Conejo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Raza</label>
+                        <input type="text" id="petBreed">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Dueño</label>
+                        <input type="text" id="ownerName" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard-receptionist.js"></script>
+</body>
+</html>
