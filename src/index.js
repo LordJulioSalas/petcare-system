@@ -1,0 +1,32 @@
+require('dotenv').config();
+const express = require('express');
+const connectDB = require('./config/database');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Conectar a MongoDB
+connectDB();
+
+const authRoutes = require('./routes/auth');
+const petsRoutes = require('./routes/pets');
+const appointmentsRoutes = require('./routes/appointments');
+const medicalRecordsRoutes = require('./routes/medicalRecords');
+const chatbotRoutes = require('./routes/chatbot');
+
+app.use(express.json());
+app.use(express.static('public'));
+
+// Rutas
+app.get('/', (req, res) => {
+  res.json({ message: 'Sistema de Citas para Mascotas' });
+});
+
+app.use('/api/auth', authRoutes);
+app.use('/api/pets', petsRoutes);
+app.use('/api/appointments', appointmentsRoutes);
+app.use('/api/medical-records', medicalRecordsRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});

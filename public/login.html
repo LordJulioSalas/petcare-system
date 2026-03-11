@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PetCare</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
+        h1 { color: #667eea; text-align: center; margin-bottom: 30px; }
+        form { display: grid; gap: 15px; }
+        input { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        input:focus { outline: none; border-color: #667eea; }
+        button { background: #667eea; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #5568d3; }
+        .error { color: #f44336; text-align: center; margin-top: 10px; display: none; }
+        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 12px; }
+        .info strong { display: block; margin-bottom: 5px; }
+        .back-link { text-align: center; margin-top: 20px; }
+        .back-link a { color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🐾 PetCare Login</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuario" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+        <div class="error" id="errorMsg"></div>
+        
+        <div class="info">
+            <strong>Usuarios de prueba:</strong>
+            Admin: admin / admin123<br>
+            Veterinario: vet1 / vet123<br>
+            Recepcionista: recep1 / recep123
+        </div>
+        
+        <div class="back-link">
+            <a href="/">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    window.location.href = '/dashboard.html';
+                } else {
+                    errorMsg.textContent = result.message;
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                errorMsg.textContent = 'Error al iniciar sesión';
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
