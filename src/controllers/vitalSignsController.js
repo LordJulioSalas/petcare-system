@@ -1,39 +1,52 @@
-const VitalSigns = require('../models/VitalSigns');
+const VitalSignsModel = require('../models/VitalSignsSchema');
 
-let vitalSigns = [];
-let nextId = 1;
-
-const getAllVitalSigns = (req, res) => {
-  res.json({ success: true, data: vitalSigns });
-};
-
-const getVitalSignsByPet = (req, res) => {
-  const signs = vitalSigns.filter(v => v.petId === parseInt(req.params.petId));
-  res.json({ success: true, data: signs });
-};
-
-const createVitalSigns = (req, res) => {
-  const { petId, appointmentId, weight, temperature, heartRate, respiratoryRate, notes } = req.body;
-  
-  if (!petId || !weight || !temperature) {
-    return res.status(400).json({ success: false, message: 'Faltan campos requeridos' });
+const getAllVitalSigns = async (req, res) => {
+  try {
+    const signs = await VitalSignsModel.find()
+      .populate('petId')
+      .populate('assistantId', 'name')
+      .sort({ date: -1 });
+    res.json({ success: true, data: signs });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
+};
 
-  const newVitalSigns = new VitalSigns(
-    nextId++,
-    petId,
-    appointmentId,
-    req.user.userId,
-    weight,
-    temperature,
-    heartRate,
-    respiratoryRate,
-    notes,
-    new Date().toISOString()
-  );
-  
-  vitalSigns.push(newVitalSigns);
-  res.status(201).json({ success: true, data: newVitalSigns });
+const getVitalSignsByPet = async (req, res) => {
+  try {
+    const signs = await VitalSignsModel.find({ petId: req.params.petId })
+      .populate('assistantId', 'name')
+      .sort({ date: -1 });
+    res.json({ success: true, data: signs });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const createVitalSigns = async (req, res) => {
+  try {
+    const { petId, appointmentId, weight, temperature, heartRate, respiratoryRate, notes } = req.body;
+    
+    if (!petId || !weight || !temperature) {
+      return res.status(400).json({ success: false, message: 'Faltan campos requeridos' });
+    }
+
+    const newVitalSigns = new VitalSignsModel({
+      petId,
+      appointmentId,
+      assistantId: req.user?.userId,
+      weight,
+      temperature,
+      heartRate,
+      respiratoryRate,
+      notes
+    });
+    
+    await newVitalSigns.save();
+    res.status(201).json({ success: true, data: newVitalSigns });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 module.exports = {

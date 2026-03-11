@@ -100,16 +100,17 @@ async function loadRecords() {
         
         const tbody = document.getElementById('recordsTable');
         tbody.innerHTML = records.map(record => {
-            const pet = pets.find(p => p.id === record.petId);
+            const pet = pets.find(p => p._id === record.petId || p._id === record.petId?._id);
+            const petName = record.petId?.name || pet?.name || 'N/A';
             return `
                 <tr>
-                    <td>${record.id}</td>
-                    <td>${pet ? pet.name : 'N/A'}</td>
+                    <td>${record._id}</td>
+                    <td>${petName}</td>
                     <td>${record.diagnosis}</td>
-                    <td>${record.treatment}</td>
+                    <td>${record.treatment || 'N/A'}</td>
                     <td>${new Date(record.date).toLocaleDateString()}</td>
                     <td>
-                        <button class="btn btn-primary" onclick="viewRecord(${record.id})">Ver</button>
+                        <button class="btn btn-primary" onclick="viewRecord('${record._id}')">Ver</button>
                     </td>
                 </tr>
             `;
@@ -176,7 +177,7 @@ document.getElementById('recordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const record = {
-        petId: parseInt(document.getElementById('recordPetId').value),
+        petId: document.getElementById('recordPetId').value,
         veterinarianId: user.id,
         diagnosis: document.getElementById('recordDiagnosis').value,
         treatment: document.getElementById('recordTreatment').value,
