@@ -204,7 +204,53 @@ function logout() {
 }
 
 function viewDetails(id) {
-    alert('Ver detalles de cita #' + id);
+    fetch(`${API_URL}/appointments/${id}`, { headers: getHeaders() })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                const apt = result.data;
+                
+                fetch(`${API_URL}/pets/${apt.petId}`)
+                    .then(r => r.json())
+                    .then(petResult => {
+                        const pet = petResult.data;
+                        
+                        const content = `
+                            <div style="display: grid; gap: 20px;">
+                                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
+                                    <h3 style="color: #667eea; margin-bottom: 15px;">🐾 Información del Paciente</h3>
+                                    <p><strong>Nombre:</strong> ${pet.name}</p>
+                                    <p><strong>Especie:</strong> ${pet.species}</p>
+                                    <p><strong>Raza:</strong> ${pet.breed || 'No especificada'}</p>
+                                    <p><strong>Dueño:</strong> ${pet.owner}</p>
+                                </div>
+                                
+                                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
+                                    <h3 style="color: #667eea; margin-bottom: 15px;">📅 Detalles de la Cita</h3>
+                                    <p><strong>ID Cita:</strong> #${apt.id}</p>
+                                    <p><strong>Fecha:</strong> ${apt.date}</p>
+                                    <p><strong>Hora:</strong> ${apt.time}</p>
+                                    <p><strong>Motivo:</strong> ${apt.reason}</p>
+                                    <p><strong>Estado:</strong> <span class="status status-${apt.status}">${apt.status}</span></p>
+                                </div>
+                                
+                                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                    <button class="btn btn-success" onclick="updateStatus(${apt.id}, 'confirmed'); closeDetailsModal();">Confirmar</button>
+                                    <button class="btn btn-primary" onclick="updateStatus(${apt.id}, 'completed'); closeDetailsModal();">Completar</button>
+                                    <button class="btn btn-danger" onclick="updateStatus(${apt.id}, 'cancelled'); closeDetailsModal();">Cancelar</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.getElementById('appointmentDetailsContent').innerHTML = content;
+                        document.getElementById('appointmentDetailsModal').classList.add('active');
+                    });
+            }
+        });
+}
+
+function closeDetailsModal() {
+    document.getElementById('appointmentDetailsModal').classList.remove('active');
 }
 
 function viewPetHistory(id) {
