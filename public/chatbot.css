@@ -48,13 +48,13 @@
     background: white;
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    display: none;
+    display: none !important;
     flex-direction: column;
     overflow: hidden;
 }
 
 .chat-window.active {
-    display: flex;
+    display: flex !important;
     animation: slideUp 0.3s ease-out;
 }
 
@@ -240,22 +240,32 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .chat-window {
-        width: calc(100vw - 40px);
-        height: calc(100vh - 40px);
-        bottom: 20px;
-        right: 20px;
+    .chatbot-container {
+        bottom: 10px;
+        right: 10px;
     }
     
     .chat-button {
         padding: 12px 20px;
+        display: flex !important;
     }
     
     .chat-text {
         display: none;
     }
+    
+    .chat-window {
+        width: calc(100vw - 20px);
+        max-width: 380px;
+        height: 500px;
+        right: 10px;
+        bottom: 10px;
+    }
+    
+    .chat-window.active {
+        display: flex !important;
+    }
 }
-
 
 /* Typing indicator */
 .typing-indicator .message-content {

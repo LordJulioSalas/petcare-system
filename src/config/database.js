@@ -2,18 +2,24 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/petcare';
+    const mongoURI = process.env.MONGODB_URI;
+    
+    if (!mongoURI) {
+      console.error('❌ MONGODB_URI no está configurado');
+      return;
+    }
     
     await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     });
     
     console.log('✅ MongoDB conectado exitosamente');
+    
   } catch (error) {
     console.error('❌ Error conectando a MongoDB:', error.message);
-    // No salir del proceso, usar datos en memoria como fallback
-    console.log('⚠️ Usando almacenamiento en memoria como fallback');
   }
 };
 

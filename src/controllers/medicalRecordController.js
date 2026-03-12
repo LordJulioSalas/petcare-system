@@ -12,6 +12,22 @@ const getAllRecords = async (req, res) => {
   }
 };
 
+const getRecordById = async (req, res) => {
+  try {
+    const record = await MedicalRecordModel.findById(req.params.id)
+      .populate('petId')
+      .populate('veterinarianId', 'name email');
+    
+    if (!record) {
+      return res.status(404).json({ success: false, message: 'Registro no encontrado' });
+    }
+    
+    res.json({ success: true, data: record });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const getRecordsByPet = async (req, res) => {
   try {
     const records = await MedicalRecordModel.find({ petId: req.params.petId })
@@ -67,6 +83,7 @@ const updateRecord = async (req, res) => {
 
 module.exports = {
   getAllRecords,
+  getRecordById,
   getRecordsByPet,
   createRecord,
   updateRecord

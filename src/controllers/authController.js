@@ -1,26 +1,35 @@
 const UserModel = require('../models/UserSchema');
 const SessionModel = require('../models/SessionSchema');
 
-// Inicializar usuarios por defecto
-const initializeUsers = async () => {
+const initializeUsers = async (req, res) => {
   try {
     const count = await UserModel.countDocuments();
-    if (count === 0) {
-      await UserModel.insertMany([
-        { username: 'admin', password: 'admin123', role: 'admin', name: 'Dr. Carlos Administrador', email: 'admin@petcare.com' },
-        { username: 'recepcion1', password: 'recep123', role: 'receptionist', name: 'María Recepcionista', email: 'recepcion@petcare.com' },
-        { username: 'asistente1', password: 'asist123', role: 'assistant', name: 'Ana Asistente Veterinaria', email: 'asistente@petcare.com' },
-        { username: 'vet1', password: 'vet123', role: 'veterinarian', name: 'Dr. Carlos Pérez', email: 'carlos@petcare.com' },
-        { username: 'vet2', password: 'vet123', role: 'veterinarian', name: 'Dra. Laura Martínez', email: 'laura@petcare.com' }
-      ]);
-      console.log('✅ Usuarios iniciales creados');
+    
+    const users = [
+      { username: 'admin', password: 'admin123', role: 'admin', name: 'Dr. Carlos Administrador', email: 'admin@petcare.com' },
+      { username: 'recepcion1', password: 'recep123', role: 'receptionist', name: 'María Recepcionista', email: 'recepcion@petcare.com' },
+      { username: 'asistente1', password: 'asist123', role: 'assistant', name: 'Ana Asistente Veterinaria', email: 'asistente@petcare.com' },
+      { username: 'vet1', password: 'vet123', role: 'veterinarian', name: 'Dr. Carlos Pérez', email: 'carlos@petcare.com' },
+      { username: 'vet2', password: 'vet123', role: 'veterinarian', name: 'Dra. Laura Martínez', email: 'laura@petcare.com' }
+    ];
+    
+    let created = 0;
+    for (const userData of users) {
+      try {
+        await UserModel.create(userData);
+        created++;
+      } catch (err) {
+        if (err.code !== 11000) {
+          console.error('Error creando usuario:', err.message);
+        }
+      }
     }
+    
+    res.json({ success: true, message: `${created} usuarios creados. Total: ${count + created}` });
   } catch (error) {
-    console.error('Error inicializando usuarios:', error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
-
-initializeUsers();
 
 const login = async (req, res) => {
   try {
@@ -93,6 +102,7 @@ const getAllUsers = async (req, res) => {
 };
 
 module.exports = {
+  initializeUsers,
   login,
   logout,
   verifyToken,

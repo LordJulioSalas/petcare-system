@@ -55,6 +55,87 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #666; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; }
         .close-btn { float: right; font-size: 24px; cursor: pointer; color: #999; }
+        
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            .navbar { 
+                padding: 10px 15px; 
+                flex-direction: column; 
+                gap: 10px; 
+                text-align: center; 
+            }
+            
+            .navbar h1 { 
+                font-size: 18px; 
+            }
+            
+            .user-info { 
+                flex-direction: column; 
+                gap: 10px; 
+                font-size: 14px; 
+            }
+            
+            .container { 
+                padding: 15px; 
+            }
+            
+            .stats { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 10px; 
+            }
+            
+            .stat-card { 
+                padding: 15px; 
+            }
+            
+            .stat-card .number { 
+                font-size: 24px; 
+            }
+            
+            .tabs { 
+                flex-direction: column; 
+                gap: 5px; 
+            }
+            
+            .tab { 
+                padding: 10px; 
+                text-align: center; 
+            }
+            
+            .card { 
+                padding: 15px; 
+                overflow-x: auto; 
+            }
+            
+            .card h2 { 
+                font-size: 16px; 
+            }
+            
+            table { 
+                font-size: 12px; 
+                min-width: 600px; 
+            }
+            
+            th, td { 
+                padding: 8px 5px; 
+                white-space: nowrap; 
+            }
+            
+            .btn { 
+                padding: 6px 10px; 
+                font-size: 11px; 
+                margin: 2px; 
+            }
+            
+            .modal-content { 
+                padding: 20px; 
+                width: 95%; 
+            }
+            
+            .modal-content h2 { 
+                font-size: 18px; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -185,6 +266,22 @@
             <div id="appointmentDetailsContent" style="margin-top: 20px;">
                 <!-- Content will be loaded here -->
             </div>
+        </div>
+    </div>
+
+    <div id="petHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePetHistoryModal()">&times;</span>
+            <h2>Historial Completo</h2>
+            <div id="petHistoryContent"></div>
+        </div>
+    </div>
+
+    <div id="recordDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeRecordDetailsModal()">&times;</span>
+            <h2>Detalles del Registro Médico</h2>
+            <div id="recordDetailsContent"></div>
         </div>
     </div>
 

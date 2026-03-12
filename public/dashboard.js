@@ -40,13 +40,14 @@ async function loadAppointments() {
         tbody.innerHTML = appointments.map(apt => {
             const pet = pets.find(p => p._id === apt.petId || p._id === apt.petId?._id);
             const petName = apt.petId?.name || pet?.name || 'N/A';
+            const notes = apt.notes ? `<br><small style="color: #666;">💬 ${apt.notes}</small>` : '';
             return `
                 <tr>
                     <td>${apt._id}</td>
                     <td>${petName}</td>
                     <td>${apt.date}</td>
                     <td>${apt.time}</td>
-                    <td>${apt.reason}</td>
+                    <td>${apt.reason}${notes}</td>
                     <td><span class="status status-${apt.status}">${apt.status}</span></td>
                     <td>
                         <button class="btn btn-success" onclick="updateStatus('${apt._id}', 'confirmed')">Confirmar</button>
@@ -229,6 +230,7 @@ function viewDetails(id) {
                             <p><strong>Fecha:</strong> ${apt.date}</p>
                             <p><strong>Hora:</strong> ${apt.time}</p>
                             <p><strong>Motivo:</strong> ${apt.reason}</p>
+                            ${apt.notes ? `<p><strong>Comentarios:</strong> ${apt.notes}</p>` : ''}
                             <p><strong>Estado:</strong> <span class="status status-${apt.status}">${apt.status}</span></p>
                         </div>
                         
@@ -250,12 +252,159 @@ function closeDetailsModal() {
     document.getElementById('appointmentDetailsModal').classList.remove('active');
 }
 
+function closePetHistoryModal() {
+    document.getElementById('petHistoryModal').classList.remove('active');
+}
+
 function viewPetHistory(id) {
-    alert('Ver historial de mascota #' + id);
+    Promise.all([
+        fetch(`${API_URL}/pets/${id}`, { headers: getHeaders() }).then(r => r.json()),
+        fetch(`${API_URL}/medical-records`, { headers: getHeaders() }).then(r => r.json()),
+        fetch(`${API_URL}/appointments`, { headers: getHeaders() }).then(r => r.json())
+    ]).then(([petResult, recordsResult, appointmentsResult]) => {
+        if (petResult.success) {
+            const pet = petResult.data;
+            const allRecords = recordsResult.data || [];
+            const allAppointments = appointmentsResult.data || [];
+            
+            // Filtrar registros y citas de esta mascota
+            const petRecords = allRecords.filter(r => 
+                (r.petId === id || r.petId?._id === id)
+            );
+            const petAppointments = allAppointments.filter(a => 
+                (a.petId === id || a.petId?._id === id)
+            );
+            
+            const recordsHTML = petRecords.length > 0 ? petRecords.map(record => `
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #667eea;">
+                    <p><strong>📅 Fecha:</strong> ${new Date(record.date).toLocaleDateString()}</p>
+                    <p><strong>🩺 Diagnóstico:</strong> ${record.diagnosis}</p>
+                    <p><strong>💊 Tratamiento:</strong> ${record.treatment || 'N/A'}</p>
+                    ${record.notes ? `<p><strong>📝 Notas:</strong> ${record.notes}</p>` : ''}
+                </div>
+            `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No hay registros médicos</p>';
+            
+            const appointmentsHTML = petAppointments.length > 0 ? petAppointments.map(apt => `
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #764ba2;">
+                    <p><strong>📅 Fecha:</strong> ${apt.date} a las ${apt.time}</p>
+                    <p><strong>📋 Motivo:</strong> ${apt.reason}</p>
+                    ${apt.notes ? `<p><strong>💬 Comentarios:</strong> ${apt.notes}</p>` : ''}
+                    <p><strong>Estado:</strong> <span class="status status-${apt.status}">${apt.status}</span></p>
+                </div>
+            `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No hay citas registradas</p>';
+            
+            const content = `
+                <div style="display: grid; gap: 25px;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; color: white;">
+                        <h3 style="font-size: 24px; margin-bottom: 15px;">🐾 ${pet.name}</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px;">
+                            <p><strong>Especie:</strong> ${pet.species}</p>
+                            <p><strong>Raza:</strong> ${pet.breed || 'No especificada'}</p>
+                            <p><strong>Dueño:</strong> ${pet.owner}</p>
+                            <p><strong>ID:</strong> ${pet._id}</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">📋 Historial Médico</h3>
+                        ${recordsHTML}
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #764ba2; margin-bottom: 15px; font-size: 18px;">📅 Historial de Citas</h3>
+                        ${appointmentsHTML}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('petHistoryContent').innerHTML = content;
+            document.getElementById('petHistoryModal').classList.add('active');
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Error al cargar el historial');
+    });
 }
 
 function viewRecord(id) {
-    alert('Ver registro médico #' + id);
+    fetch(`${API_URL}/medical-records/${id}`, { headers: getHeaders() })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                const record = result.data;
+                
+                // Obtener información de la mascota
+                const petId = record.petId?._id || record.petId;
+                return fetch(`${API_URL}/pets/${petId}`, { headers: getHeaders() })
+                    .then(r => r.json())
+                    .then(petResult => {
+                        const pet = petResult.data || record.petId;
+                        
+                        const content = `
+                            <div style="display: grid; gap: 20px;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; color: white;">
+                                    <h3 style="font-size: 20px; margin-bottom: 15px;">🐾 Información del Paciente</h3>
+                                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px;">
+                                        <p><strong>Nombre:</strong> ${pet?.name || 'N/A'}</p>
+                                        <p><strong>Especie:</strong> ${pet?.species || 'N/A'}</p>
+                                        <p><strong>Raza:</strong> ${pet?.breed || 'No especificada'}</p>
+                                        <p><strong>Dueño:</strong> ${pet?.owner || 'N/A'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
+                                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">📋 Registro Médico</h3>
+                                    <div style="display: grid; gap: 15px;">
+                                        <div>
+                                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>ID del Registro:</strong></p>
+                                            <p style="font-size: 14px;">${record._id}</p>
+                                        </div>
+                                        <div>
+                                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>📅 Fecha:</strong></p>
+                                            <p style="font-size: 14px;">${new Date(record.date).toLocaleDateString('es-ES', { 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            })}</p>
+                                        </div>
+                                        <div>
+                                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>🩺 Diagnóstico:</strong></p>
+                                            <p style="font-size: 14px; line-height: 1.6;">${record.diagnosis}</p>
+                                        </div>
+                                        <div>
+                                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>💊 Tratamiento:</strong></p>
+                                            <p style="font-size: 14px; line-height: 1.6;">${record.treatment || 'No especificado'}</p>
+                                        </div>
+                                        ${record.notes ? `
+                                        <div>
+                                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>📝 Notas Adicionales:</strong></p>
+                                            <p style="font-size: 14px; line-height: 1.6;">${record.notes}</p>
+                                        </div>
+                                        ` : ''}
+                                        ${record.veterinarianId ? `
+                                        <div>
+                                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>👨‍⚕️ Veterinario:</strong></p>
+                                            <p style="font-size: 14px;">${record.veterinarianId.name || record.veterinarianId}</p>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.getElementById('recordDetailsContent').innerHTML = content;
+                        document.getElementById('recordDetailsModal').classList.add('active');
+                    });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar el registro médico');
+        });
+}
+
+function closeRecordDetailsModal() {
+    document.getElementById('recordDetailsModal').classList.remove('active');
 }
 
 loadDashboard();

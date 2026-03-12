@@ -96,7 +96,8 @@ document.getElementById('appointmentForm').addEventListener('submit', async (e) 
                 petId: petId,
                 date: document.getElementById('appointmentDate').value,
                 time: document.getElementById('appointmentTime').value,
-                reason: document.getElementById('appointmentReason').value
+                reason: document.getElementById('appointmentReason').value,
+                notes: document.getElementById('appointmentNotes').value || ''
             })
         });
         

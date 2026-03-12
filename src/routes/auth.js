@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
+router.get('/init-users', authController.initializeUsers);
+router.post('/init-users', authController.initializeUsers);
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.get('/users', authController.verifyToken, authController.getAllUsers);
