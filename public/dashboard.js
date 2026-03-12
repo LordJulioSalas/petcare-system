@@ -217,7 +217,7 @@ function viewDetails(id) {
                 const content = `
                     <div style="display: grid; gap: 20px;">
                         <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
-                            <h3 style="color: #667eea; margin-bottom: 15px;">🐾 Información del Paciente</h3>
+                            <h3 style="color: #2C5F7C; margin-bottom: 15px;">🐾 Información del Paciente</h3>
                             <p><strong>Nombre:</strong> ${pet?.name || 'N/A'}</p>
                             <p><strong>Especie:</strong> ${pet?.species || 'N/A'}</p>
                             <p><strong>Raza:</strong> ${pet?.breed || 'No especificada'}</p>
@@ -225,7 +225,7 @@ function viewDetails(id) {
                         </div>
                         
                         <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
-                            <h3 style="color: #667eea; margin-bottom: 15px;">📅 Detalles de la Cita</h3>
+                            <h3 style="color: #2C5F7C; margin-bottom: 15px;">📅 Detalles de la Cita</h3>
                             <p><strong>ID Cita:</strong> #${apt._id}</p>
                             <p><strong>Fecha:</strong> ${apt.date}</p>
                             <p><strong>Hora:</strong> ${apt.time}</p>
@@ -276,7 +276,7 @@ function viewPetHistory(id) {
             );
             
             const recordsHTML = petRecords.length > 0 ? petRecords.map(record => `
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #667eea;">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #2C5F7C;">
                     <p><strong>📅 Fecha:</strong> ${new Date(record.date).toLocaleDateString()}</p>
                     <p><strong>🩺 Diagnóstico:</strong> ${record.diagnosis}</p>
                     <p><strong>💊 Tratamiento:</strong> ${record.treatment || 'N/A'}</p>
@@ -285,7 +285,7 @@ function viewPetHistory(id) {
             `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No hay registros médicos</p>';
             
             const appointmentsHTML = petAppointments.length > 0 ? petAppointments.map(apt => `
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #764ba2;">
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #3A7CA5;">
                     <p><strong>📅 Fecha:</strong> ${apt.date} a las ${apt.time}</p>
                     <p><strong>📋 Motivo:</strong> ${apt.reason}</p>
                     ${apt.notes ? `<p><strong>💬 Comentarios:</strong> ${apt.notes}</p>` : ''}
@@ -295,7 +295,7 @@ function viewPetHistory(id) {
             
             const content = `
                 <div style="display: grid; gap: 25px;">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; color: white;">
+                    <div style="background: linear-gradient(135deg, #2C5F7C 0%, #3A7CA5 100%); padding: 25px; border-radius: 10px; color: white;">
                         <h3 style="font-size: 24px; margin-bottom: 15px;">🐾 ${pet.name}</h3>
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px;">
                             <p><strong>Especie:</strong> ${pet.species}</p>
@@ -306,12 +306,12 @@ function viewPetHistory(id) {
                     </div>
                     
                     <div>
-                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">📋 Historial Médico</h3>
+                        <h3 style="color: #2C5F7C; margin-bottom: 15px; font-size: 18px;">📋 Historial Médico</h3>
                         ${recordsHTML}
                     </div>
                     
                     <div>
-                        <h3 style="color: #764ba2; margin-bottom: 15px; font-size: 18px;">📅 Historial de Citas</h3>
+                        <h3 style="color: #3A7CA5; margin-bottom: 15px; font-size: 18px;">📅 Historial de Citas</h3>
                         ${appointmentsHTML}
                     </div>
                 </div>
@@ -342,7 +342,7 @@ function viewRecord(id) {
                         
                         const content = `
                             <div style="display: grid; gap: 20px;">
-                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; color: white;">
+                                <div style="background: linear-gradient(135deg, #2C5F7C 0%, #3A7CA5 100%); padding: 25px; border-radius: 10px; color: white;">
                                     <h3 style="font-size: 20px; margin-bottom: 15px;">🐾 Información del Paciente</h3>
                                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px;">
                                         <p><strong>Nombre:</strong> ${pet?.name || 'N/A'}</p>
@@ -353,7 +353,7 @@ function viewRecord(id) {
                                 </div>
                                 
                                 <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
-                                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">📋 Registro Médico</h3>
+                                    <h3 style="color: #2C5F7C; margin-bottom: 15px; font-size: 18px;">📋 Registro Médico</h3>
                                     <div style="display: grid; gap: 15px;">
                                         <div>
                                             <p style="color: #666; font-size: 13px; margin-bottom: 5px;"><strong>ID del Registro:</strong></p>
